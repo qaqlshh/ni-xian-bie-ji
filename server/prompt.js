@@ -162,3 +162,27 @@ export function buildMessages({ text }) {
   messages.push({ role: 'user', content: `<original>${text}</original>` })
   return messages
 }
+
+export function buildReviewMessages(text, draft) {
+  const system = `你是“你先别急”的最终审稿人。用户不会看到你的分析，只会看到三个可直接发送的结果。
+
+逐句对照原话审查草稿：
+1. 是否新增了原话没有的事实、动机、关系、行动要求或结论。
+2. 是否把反问、夸张、比喻误当成事实。
+3. 是否替用户要求对方重做、回复、道歉、给准话或结束关系。
+4. 是否出现客服腔、公文腔、咨询师腔或明显的 AI 模板句。
+5. 是否保留了原话真正的情绪，而不是一律改成礼貌或愤怒。
+6. 三句是否分别做到：gentle 收一点但不讨好；direct 最自然、最适合直接发送；spicy 放大原有情绪但不增加攻击性和回应压力。
+7. 三句是否有真正不同的表达，而不是只替换几个词。
+
+发现问题就改正；没有问题的句子保持原样。不要解释修改过程。
+只输出合法 JSON：{"gentle":"...","direct":"...","spicy":"..."}。`
+
+  return [
+    { role: 'system', content: system },
+    {
+      role: 'user',
+      content: `<original>${text}</original>\n<draft>${JSON.stringify(draft)}</draft>`,
+    },
+  ]
+}

@@ -1,5 +1,5 @@
 import { json, readJson, sendJson } from '../server/http.js'
-import { buildMessages } from '../server/prompt.js'
+import { buildMessages, buildReviewMessages } from '../server/prompt.js'
 import { checkRateLimit } from '../server/rateLimit.js'
 import { validateInput, validateResults } from '../server/validation.js'
 
@@ -26,56 +26,86 @@ function parseProviderContent(content) {
   }
 }
 
-async function callProvider(input, provider) {
+function requestBody(provider, messages, { maxTokens, temperature }) {
+  const body = {
+    model: provider.model,
+    messages,
+    response_format: { type: 'json_object' },
+    temperature,
+    max_tokens: maxTokens,
+    stream: false,
+  }
+  if (provider.baseUrl.includes('deepseek.com') || provider.model.startsWith('deepseek-')) {
+    body.thinking = { type: 'disabled' }
+  }
+  return body
+}
+
+async function requestProvider(provider, messages, options) {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), options.timeoutMs)
+
+  try {
+    const response = await fetch(`${provider.baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${provider.apiKey}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(requestBody(provider, messages, options)),
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      const detail = await response.text()
+      const error = new Error(`AI provider ${response.status}: ${detail.slice(0, 160)}`)
+      error.retryable = response.status >= 500 || response.status === 429
+      throw error
+    }
+
+    const payload = await response.json()
+    return parseProviderContent(payload.choices?.[0]?.message?.content)
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
+async function withRetry(work, attempts) {
   let lastError
 
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 24_000)
-
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
     try {
-      const requestBody = {
-        model: provider.model,
-        messages: buildMessages(input),
-        response_format: { type: 'json_object' },
-        temperature: 0.35,
-        max_tokens: 1000,
-        stream: false,
-      }
-      if (provider.baseUrl.includes('deepseek.com') || provider.model.startsWith('deepseek-')) {
-        requestBody.thinking = { type: 'disabled' }
-      }
-
-      const response = await fetch(`${provider.baseUrl}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${provider.apiKey}`,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-        signal: controller.signal,
-      })
-
-      if (!response.ok) {
-        const detail = await response.text()
-        const error = new Error(`AI provider ${response.status}: ${detail.slice(0, 160)}`)
-        error.retryable = response.status >= 500 || response.status === 429
-        throw error
-      }
-
-      const payload = await response.json()
-      return parseProviderContent(payload.choices?.[0]?.message?.content)
+      return await work()
     } catch (error) {
       lastError = error
       const retryable = error.name === 'AbortError' || error.retryable
-      if (!retryable || attempt === 1) break
+      if (!retryable || attempt === attempts - 1) break
       await new Promise((resolve) => setTimeout(resolve, 250))
-    } finally {
-      clearTimeout(timeout)
     }
   }
 
   throw lastError
+}
+
+async function callProvider(input, provider) {
+  const draft = await withRetry(
+    () => requestProvider(provider, buildMessages(input), {
+      maxTokens: 1000,
+      temperature: 0.35,
+      timeoutMs: 10_000,
+    }),
+    2,
+  )
+
+  try {
+    return await requestProvider(provider, buildReviewMessages(input.text, draft), {
+      maxTokens: 500,
+      temperature: 0.1,
+      timeoutMs: 8_000,
+    })
+  } catch {
+    return draft
+  }
 }
 
 export default async function handler(request, response) {

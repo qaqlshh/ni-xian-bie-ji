@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildMessages } from '../server/prompt.js'
+import { buildMessages, buildReviewMessages } from '../server/prompt.js'
 import { validateInput, validateResults } from '../server/validation.js'
 
 test('accepts and normalizes a valid request', () => {
@@ -11,6 +11,17 @@ test('accepts and normalizes a valid request', () => {
     intent: '发火',
     fire: 70,
   })
+})
+
+test('reviews drafts against the original before returning them', () => {
+  const messages = buildReviewMessages('我不知道你怎么想', {
+    gentle: '我不知道你怎么想。',
+    direct: '告诉我你怎么想。',
+    spicy: '给个准话。',
+  })
+  assert.match(messages[0].content, /回应压力/)
+  assert.match(messages[1].content, /<original>我不知道你怎么想<\/original>/)
+  assert.match(messages[1].content, /给个准话/)
 })
 
 test('accepts the one-input experience with sensible defaults', () => {
