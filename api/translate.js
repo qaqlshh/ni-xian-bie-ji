@@ -1,7 +1,7 @@
-import { json, readJson } from './lib/http.js'
-import { buildMessages } from './lib/prompt.js'
-import { checkRateLimit } from './lib/rateLimit.js'
-import { validateInput, validateResults } from './lib/validation.js'
+import { json, readJson, sendJson } from '../server/http.js'
+import { buildMessages } from '../server/prompt.js'
+import { checkRateLimit } from '../server/rateLimit.js'
+import { validateInput, validateResults } from '../server/validation.js'
 
 export const config = { maxDuration: 30 }
 
@@ -66,14 +66,18 @@ async function callProvider(input, provider) {
   throw lastError
 }
 
-export default async function handler(request) {
+export default async function handler(request, response) {
+  const respond = (data, status = 200, headers = {}) => response
+    ? sendJson(response, data, status, headers)
+    : json(data, status, headers)
+
   if (request.method !== 'POST') {
-    return json({ message: '只接受 POST 请求。' }, 405, { allow: 'POST' })
+    return respond({ message: '只接受 POST 请求。' }, 405, { allow: 'POST' })
   }
 
   const rate = checkRateLimit(request)
   if (!rate.allowed) {
-    return json(
+    return respond(
       { message: '你今天有点急。十分钟后再来。' },
       429,
       { 'retry-after': String(rate.retryAfter) },
@@ -81,19 +85,19 @@ export default async function handler(request) {
   }
 
   const validation = validateInput(await readJson(request))
-  if (validation.error) return json({ message: validation.error }, 400)
+  if (validation.error) return respond({ message: validation.error }, 400)
 
   const provider = providerConfig()
   if (!provider.apiKey) {
-    return json({ message: 'AI 还没接电。请先配置 DEEPSEEK_API_KEY。' }, 503)
+    return respond({ message: 'AI 还没接电。请先配置 DEEPSEEK_API_KEY。' }, 503)
   }
 
   try {
     const results = await callProvider(validation.value, provider)
-    return json({ results })
+    return respond({ results })
   } catch (error) {
     const timeout = error?.name === 'AbortError'
-    return json(
+    return respond(
       { message: timeout ? 'AI 想太久了。你先别急，再试一次。' : '这句话没抢救回来，再试一次。' },
       timeout ? 504 : 502,
     )

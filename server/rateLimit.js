@@ -3,9 +3,16 @@ const MAX_REQUESTS = 8
 const buckets = globalThis.__translationRateBuckets || new Map()
 globalThis.__translationRateBuckets = buckets
 
+function header(request, name) {
+  if (typeof request.headers?.get === 'function') return request.headers.get(name)
+  const value = request.headers?.[name] || request.headers?.[name.toLowerCase()]
+  return Array.isArray(value) ? value[0] : value
+}
+
 function clientKey(request) {
-  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || request.headers.get('x-real-ip')
+  return header(request, 'x-forwarded-for')?.split(',')[0]?.trim()
+    || header(request, 'x-real-ip')
+    || request.socket?.remoteAddress
     || 'unknown'
 }
 

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildMessages } from '../api/lib/prompt.js'
-import { validateInput, validateResults } from '../api/lib/validation.js'
+import { buildMessages } from '../server/prompt.js'
+import { validateInput, validateResults } from '../server/validation.js'
 
 test('accepts and normalizes a valid request', () => {
   const result = validateInput({ text: '  你们到底改不改？  ', relation: '甲方', intent: '发火', fire: 67 })
