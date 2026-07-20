@@ -9,7 +9,10 @@ function providerConfig() {
   const apiKey = process.env.DEEPSEEK_API_KEY || process.env.AI_API_KEY
   const baseUrl = (process.env.DEEPSEEK_BASE_URL || process.env.AI_BASE_URL || 'https://api.deepseek.com').replace(/\/$/, '')
   const model = process.env.DEEPSEEK_MODEL || process.env.AI_MODEL || 'deepseek-v4-flash'
-  return { apiKey, baseUrl, model }
+  const reviewModel = process.env.DEEPSEEK_REVIEW_MODEL
+    || process.env.AI_REVIEW_MODEL
+    || (baseUrl.includes('deepseek.com') ? 'deepseek-v4-pro' : model)
+  return { apiKey, baseUrl, model, reviewModel }
 }
 
 function parseProviderContent(content) {
@@ -98,11 +101,14 @@ async function callProvider(input, provider) {
   )
 
   try {
-    return await requestProvider(provider, buildReviewMessages(input.text, draft), {
+    return await requestProvider(
+      { ...provider, model: provider.reviewModel },
+      buildReviewMessages(input.text, draft), {
       maxTokens: 500,
       temperature: 0.1,
-      timeoutMs: 8_000,
-    })
+      timeoutMs: 12_000,
+      },
+    )
   } catch {
     return draft
   }
