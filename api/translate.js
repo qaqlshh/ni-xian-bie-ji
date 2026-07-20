@@ -8,14 +8,15 @@ export const config = { maxDuration: 30 }
 function providerConfig() {
   const apiKey = process.env.DEEPSEEK_API_KEY || process.env.AI_API_KEY
   const baseUrl = (process.env.DEEPSEEK_BASE_URL || process.env.AI_BASE_URL || 'https://api.deepseek.com').replace(/\/$/, '')
-  const model = process.env.DEEPSEEK_MODEL || process.env.AI_MODEL || 'deepseek-chat'
+  const model = process.env.DEEPSEEK_MODEL || process.env.AI_MODEL || 'deepseek-v4-flash'
   return { apiKey, baseUrl, model }
 }
 
 function parseProviderContent(content) {
   try {
     const cleaned = String(content || '').trim().replace(/^```json\s*/i, '').replace(/\s*```$/, '')
-    const results = validateResults(JSON.parse(cleaned))
+    const parsed = JSON.parse(cleaned)
+    const results = validateResults(parsed.results || parsed)
     if (!results) throw new Error('AI 返回的三个版本不完整')
     return results
   } catch {
@@ -33,20 +34,25 @@ async function callProvider(input, provider) {
     const timeout = setTimeout(() => controller.abort(), 24_000)
 
     try {
+      const requestBody = {
+        model: provider.model,
+        messages: buildMessages(input),
+        response_format: { type: 'json_object' },
+        temperature: 0.35,
+        max_tokens: 1000,
+        stream: false,
+      }
+      if (provider.baseUrl.includes('deepseek.com') || provider.model.startsWith('deepseek-')) {
+        requestBody.thinking = { type: 'disabled' }
+      }
+
       const response = await fetch(`${provider.baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           authorization: `Bearer ${provider.apiKey}`,
           'content-type': 'application/json',
         },
-        body: JSON.stringify({
-          model: provider.model,
-          messages: buildMessages(input),
-          response_format: { type: 'json_object' },
-          temperature: 0.2,
-          max_tokens: 700,
-          stream: false,
-        }),
+        body: JSON.stringify(requestBody),
         signal: controller.signal,
       })
 

@@ -34,7 +34,7 @@ npx vercel dev
 | --- | --- | --- |
 | `DEEPSEEK_API_KEY` | 是 | 无 |
 | `DEEPSEEK_BASE_URL` | 否 | `https://api.deepseek.com` |
-| `DEEPSEEK_MODEL` | 否 | `deepseek-chat` |
+| `DEEPSEEK_MODEL` | 否 | `deepseek-v4-flash` |
 
 也支持通过 `AI_API_KEY`、`AI_BASE_URL`、`AI_MODEL` 接入其他兼容 OpenAI Chat Completions 的服务。
 
