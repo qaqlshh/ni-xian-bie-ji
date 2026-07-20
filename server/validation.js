@@ -1,13 +1,13 @@
-const relations = new Set(['喜欢的人', '前任', '朋友', '领导', '甲方'])
-const intents = new Set(['说清楚', '拒绝', '道歉', '发火'])
+const relations = new Set(['自动判断', '喜欢的人', '前任', '朋友', '领导', '甲方'])
+const intents = new Set(['自动判断', '说清楚', '拒绝', '道歉', '发火'])
 
 export function validateInput(value) {
   if (!value || typeof value !== 'object') return { error: '请求内容不对。' }
 
   const text = String(value.text || '').trim()
-  const relation = String(value.relation || '').trim()
-  const intent = String(value.intent || '').trim()
-  const fire = Number(value.fire)
+  const relation = String(value.relation || '自动判断').trim()
+  const intent = String(value.intent || '自动判断').trim()
+  const fire = value.fire === undefined || value.fire === null || value.fire === '' ? 60 : Number(value.fire)
 
   if (Array.from(text).length < 2 || Array.from(text).length > 300) {
     return { error: '原话请控制在 2 到 300 个字。' }

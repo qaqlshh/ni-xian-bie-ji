@@ -13,6 +13,16 @@ test('accepts and normalizes a valid request', () => {
   })
 })
 
+test('accepts the one-input experience with sensible defaults', () => {
+  const result = validateInput({ text: '你到底还要不要回消息？' })
+  assert.deepEqual(result.value, {
+    text: '你到底还要不要回消息？',
+    relation: '自动判断',
+    intent: '自动判断',
+    fire: 60,
+  })
+})
+
 test('rejects unknown options and oversized text', () => {
   assert.equal(validateInput({ text: '行', relation: '陌生人', intent: '发火', fire: 50 }).error, '原话请控制在 2 到 300 个字。')
   assert.equal(validateInput({ text: '可以了', relation: '陌生人', intent: '发火', fire: 50 }).error, '关系选项不对。')

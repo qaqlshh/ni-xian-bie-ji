@@ -1,11 +1,10 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import ResultCard from './ResultCard.vue'
 import { downloadShareCard } from '../utils/shareCard'
 
 const props = defineProps({
   error: { type: String, default: '' },
-  fire: { type: Number, default: 50 },
   loading: { type: Boolean, default: false },
   original: { type: String, required: true },
   results: { type: Object, default: null },
@@ -15,11 +14,11 @@ defineEmits(['retry'])
 const copiedKey = ref('')
 const shareError = ref('')
 
-const cards = computed(() => [
-  { key: 'gentle', label: '降一点', description: `${Math.max(0, props.fire - 30)}% 火气`, tone: 'gentle' },
-  { key: 'direct', label: '照直说', description: `${props.fire}% 火气`, tone: 'direct' },
-  { key: 'spicy', label: '带着火', description: `${Math.min(100, props.fire + 20)}% 火气`, tone: 'spicy' },
-])
+const cards = [
+  { key: 'gentle', label: '降一点', description: '先把刺收一收', tone: 'gentle' },
+  { key: 'direct', label: '照直说', description: '意思直接说明白', tone: 'direct' },
+  { key: 'spicy', label: '带着火', description: '有脾气，但不骂人', tone: 'spicy' },
+]
 
 async function copyText(key, text) {
   try {

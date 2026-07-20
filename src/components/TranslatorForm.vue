@@ -1,8 +1,5 @@
 <script setup>
 import { computed, ref } from 'vue'
-import FireSlider from './FireSlider.vue'
-import OptionGroup from './OptionGroup.vue'
-import { intentOptions, relationOptions } from '../data/translatorOptions'
 
 defineProps({
   loading: { type: Boolean, default: false },
@@ -10,19 +7,11 @@ defineProps({
 
 const emit = defineEmits(['translate'])
 const originalText = ref('你们是不是一天一个想法，钱也一天一结？')
-const relation = ref('甲方')
-const intent = ref('发火')
-const fire = ref(70)
 const characterCount = computed(() => Array.from(originalText.value).length)
 
 function submit() {
   if (!originalText.value.trim()) return
-  emit('translate', {
-    text: originalText.value.trim(),
-    relation: relation.value,
-    intent: intent.value,
-    fire: fire.value,
-  })
+  emit('translate', { text: originalText.value.trim() })
 }
 </script>
 
@@ -31,9 +20,8 @@ function submit() {
     <div class="card-header">
       <div>
         <span class="step-label"><i aria-hidden="true"></i> 发送前抢救室</span>
-        <h2 id="translator-title">原话先放这儿</h2>
+        <h2 id="translator-title">有什么话，先打出来</h2>
       </div>
-      <span class="status-pill">不会自动发送</span>
     </div>
 
     <label class="textarea-wrap">
@@ -41,20 +29,13 @@ function submit() {
       <span>{{ characterCount }}/300</span>
     </label>
 
-    <div class="form-grid">
-      <OptionGroup v-model="relation" label="对面是谁？" :options="relationOptions" />
-      <OptionGroup v-model="intent" label="这次想干嘛？" :options="intentOptions" />
-    </div>
-
-    <FireSlider v-model="fire" />
-
     <button class="translate-button" type="button" :disabled="loading || !originalText.trim()" @click="submit">
       <span>{{ loading ? '正在抢救这句话…' : '翻一下，先别发' }}</span>
       <span v-if="!loading" class="button-arrow" aria-hidden="true">→</span>
       <span v-else class="button-loader" aria-hidden="true"></span>
     </button>
 
-    <p class="form-note"><span aria-hidden="true">⌁</span> 不会替你道歉，也不会偷偷把火气删了</p>
+    <p class="form-note"><span aria-hidden="true">⌁</span> 对面是谁、该留几成火，交给它自己判断</p>
   </section>
 </template>
 
@@ -106,16 +87,6 @@ h2 {
   line-height: 1.2;
 }
 
-.status-pill {
-  padding: 7px 11px;
-  border: 1px solid #ece4dc;
-  border-radius: 999px;
-  color: #8b7f75;
-  background: #faf7f2;
-  font-size: 10px;
-  white-space: nowrap;
-}
-
 .textarea-wrap {
   position: relative;
   display: block;
@@ -124,7 +95,7 @@ h2 {
 textarea {
   box-sizing: border-box;
   width: 100%;
-  min-height: 132px;
+  min-height: 190px;
   resize: none;
   padding: 17px 18px 32px;
   border: 1px solid #e9e0d7;
@@ -152,20 +123,13 @@ textarea:focus {
   font-size: 11px;
 }
 
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin: 14px 0;
-}
-
 .translate-button {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   min-height: 56px;
-  margin-top: 14px;
+  margin-top: 13px;
   padding: 0 10px 0 19px;
   border: 0;
   border-radius: 16px;
@@ -237,13 +201,8 @@ textarea:focus {
     border-radius: 22px;
   }
 
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .status-pill {
-    display: none;
+  textarea {
+    min-height: 170px;
   }
 }
 </style>

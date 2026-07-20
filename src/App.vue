@@ -53,7 +53,6 @@ async function handleTranslate(payload) {
             <ResultPanel
               v-if="results || error"
               :error="error"
-              :fire="lastPayload?.fire ?? 50"
               :loading="isLoading"
               :original="lastPayload?.text || ''"
               :results="results"
