@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { buildMessages, buildReviewMessages } from '../server/prompt.js'
+import { findContentViolations } from '../server/contentGuard.js'
+import { buildMessages, buildRepairMessages, buildReviewMessages } from '../server/prompt.js'
 import { validateInput, validateResults } from '../server/validation.js'
 
 test('accepts and normalizes a valid request', () => {
@@ -23,6 +24,30 @@ test('reviews drafts against the original before returning them', () => {
   assert.match(messages.at(-1).content, /<original>我不知道你怎么想<\/original>/)
   assert.match(messages.at(-1).content, /给个准话/)
   assert.equal(messages.filter((message) => message.role === 'assistant').length, 2)
+})
+
+test('detects action requests invented during rewriting', () => {
+  const issues = findContentViolations('这方案也能交？', {
+    gentle: '这个方案需要重新考虑一下。',
+    direct: '这个方案质量不过关。',
+    spicy: '重做吧。',
+  })
+  assert.equal(issues.length, 2)
+
+  const replyIssues = findContentViolations('我喜欢你，但不知道你怎么想', {
+    gentle: '我喜欢你，但不知道你是什么感觉。',
+    direct: '我喜欢你，告诉我你怎么想。',
+    spicy: '我喜欢你，给个准话呗。',
+  })
+  assert.equal(replyIssues.length, 2)
+
+  const repair = buildRepairMessages('这方案也能交？', {
+    gentle: '这个方案需要重新考虑一下。',
+    direct: '这个方案质量不过关。',
+    spicy: '重做吧。',
+  }, issues)
+  assert.match(repair.at(-1).content, /<violations>/)
+  assert.match(repair.at(-1).content, /重新考虑/)
 })
 
 test('accepts the one-input experience with sensible defaults', () => {

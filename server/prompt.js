@@ -204,3 +204,16 @@ export function buildReviewMessages(text, draft) {
     },
   ]
 }
+
+export function buildRepairMessages(text, draft, violations) {
+  return [
+    {
+      role: 'system',
+      content: `你是中文改写的内容校对员。系统已经发现草稿擅自添加了原话没有的行动要求。只修正列出的问题，保留原意和三种语气差异，不要新增其他事实、要求或结论。只输出合法 JSON：{"gentle":"...","direct":"...","spicy":"..."}。`,
+    },
+    {
+      role: 'user',
+      content: `<original>${text}</original>\n<draft>${JSON.stringify(draft)}</draft>\n<violations>${violations.join('；')}</violations>`,
+    },
+  ]
+}

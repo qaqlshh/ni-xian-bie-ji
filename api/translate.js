@@ -1,9 +1,10 @@
 import { json, readJson, sendJson } from '../server/http.js'
-import { buildMessages, buildReviewMessages } from '../server/prompt.js'
+import { findContentViolations } from '../server/contentGuard.js'
+import { buildMessages, buildRepairMessages, buildReviewMessages } from '../server/prompt.js'
 import { checkRateLimit } from '../server/rateLimit.js'
 import { validateInput, validateResults } from '../server/validation.js'
 
-export const config = { maxDuration: 30 }
+export const config = { maxDuration: 45 }
 
 function providerConfig() {
   const apiKey = process.env.DEEPSEEK_API_KEY || process.env.AI_API_KEY
@@ -100,8 +101,9 @@ async function callProvider(input, provider) {
     2,
   )
 
+  let reviewed
   try {
-    return await requestProvider(
+    reviewed = await requestProvider(
       { ...provider, model: provider.reviewModel },
       buildReviewMessages(input.text, draft), {
       maxTokens: 500,
@@ -111,6 +113,22 @@ async function callProvider(input, provider) {
     )
   } catch {
     return draft
+  }
+
+  const violations = findContentViolations(input.text, reviewed)
+  if (violations.length === 0) return reviewed
+
+  try {
+    return await requestProvider(
+      { ...provider, model: provider.reviewModel },
+      buildRepairMessages(input.text, reviewed, violations), {
+        maxTokens: 500,
+        temperature: 0,
+        timeoutMs: 8_000,
+      },
+    )
+  } catch {
+    return reviewed
   }
 }
 
