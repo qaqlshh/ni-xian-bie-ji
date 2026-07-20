@@ -43,7 +43,7 @@ async function callProvider(input, provider) {
           model: provider.model,
           messages: buildMessages(input),
           response_format: { type: 'json_object' },
-          temperature: 0.65,
+          temperature: 0.4,
           max_tokens: 700,
           stream: false,
         }),
