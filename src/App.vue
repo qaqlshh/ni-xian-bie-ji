@@ -1,16 +1,18 @@
 <script setup>
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
+import ResultPanel from './components/ResultPanel.vue'
 import TranslatorForm from './components/TranslatorForm.vue'
+import { useTranslation } from './composables/useTranslation'
 
-const notice = ref('')
-let noticeTimer
+const resultSection = ref(null)
+const { error, isLoading, lastPayload, results, retry, translate } = useTranslation()
 
-function handlePreview() {
-  notice.value = 'AI 还在路上。你先别急。'
-  window.clearTimeout(noticeTimer)
-  noticeTimer = window.setTimeout(() => {
-    notice.value = ''
-  }, 2600)
+async function handleTranslate(payload) {
+  const succeeded = await translate(payload)
+  if (succeeded) {
+    await nextTick()
+    resultSection.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 }
 </script>
 
@@ -45,7 +47,19 @@ function handlePreview() {
           </div>
         </div>
 
-        <TranslatorForm @preview="handlePreview" />
+        <div class="workspace">
+          <TranslatorForm :loading="isLoading" @translate="handleTranslate" />
+          <div ref="resultSection">
+            <ResultPanel
+              v-if="results || error"
+              :error="error"
+              :loading="isLoading"
+              :original="lastPayload?.text || ''"
+              :results="results"
+              @retry="retry"
+            />
+          </div>
+        </div>
       </section>
     </main>
 
@@ -55,8 +69,5 @@ function handlePreview() {
       <a href="https://spicytater.cn/community/ideas?ideaId=41ecd346-32ac-4a08-8505-97ea0e17553c">在程序员副业围观这个 Vibe</a>
     </footer>
 
-    <Transition name="notice">
-      <div v-if="notice" class="notice" role="status">{{ notice }}</div>
-    </Transition>
   </div>
 </template>

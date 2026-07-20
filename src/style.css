@@ -128,10 +128,19 @@ main {
 .hero-section {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(460px, 1.1fr);
-  align-items: center;
+  align-items: start;
   gap: clamp(50px, 8vw, 110px);
   min-height: calc(100vh - 168px);
   padding: 54px 0 72px;
+}
+
+.hero-copy {
+  position: sticky;
+  top: 138px;
+}
+
+.workspace {
+  min-width: 0;
 }
 
 .hero-copy {
@@ -269,6 +278,7 @@ footer a {
 
   .hero-copy {
     max-width: 620px;
+    position: static;
   }
 }
 

@@ -4,12 +4,26 @@ import FireSlider from './FireSlider.vue'
 import OptionGroup from './OptionGroup.vue'
 import { intentOptions, relationOptions } from '../data/translatorOptions'
 
-const emit = defineEmits(['preview'])
+defineProps({
+  loading: { type: Boolean, default: false },
+})
+
+const emit = defineEmits(['translate'])
 const originalText = ref('你们是不是一天一个想法，钱也一天一结？')
 const relation = ref('甲方')
 const intent = ref('发火')
 const fire = ref(70)
 const characterCount = computed(() => Array.from(originalText.value).length)
+
+function submit() {
+  if (!originalText.value.trim()) return
+  emit('translate', {
+    text: originalText.value.trim(),
+    relation: relation.value,
+    intent: intent.value,
+    fire: fire.value,
+  })
+}
 </script>
 
 <template>
@@ -34,9 +48,10 @@ const characterCount = computed(() => Array.from(originalText.value).length)
 
     <FireSlider v-model="fire" />
 
-    <button class="translate-button" type="button" :disabled="!originalText.trim()" @click="emit('preview')">
-      <span>先翻译一下</span>
-      <span aria-hidden="true">→</span>
+    <button class="translate-button" type="button" :disabled="loading || !originalText.trim()" @click="submit">
+      <span>{{ loading ? '正在抢救这句话…' : '先翻译一下' }}</span>
+      <span v-if="!loading" aria-hidden="true">→</span>
+      <span v-else class="button-loader" aria-hidden="true"></span>
     </button>
 
     <p class="form-note">不会替你道歉，也不会偷偷把火气删了。</p>
@@ -171,6 +186,19 @@ textarea:focus {
 
 .translate-button span:last-child {
   font-size: 21px;
+}
+
+.button-loader {
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgba(255, 250, 243, 0.35);
+  border-top-color: #fffaf3;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .form-note {
