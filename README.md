@@ -1,5 +1,5 @@
-# Vue 3 + Vite
+# 你先别急
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+一个不把情绪翻译没了的急急翻译器。
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+当前阶段：基础界面。AI 生成、三版本结果、分享卡片和异常处理会在后续提交中逐步完成。
