@@ -20,8 +20,9 @@ test('reviews drafts against the original before returning them', () => {
     spicy: '给个准话。',
   })
   assert.match(messages[0].content, /回应压力/)
-  assert.match(messages[1].content, /<original>我不知道你怎么想<\/original>/)
-  assert.match(messages[1].content, /给个准话/)
+  assert.match(messages.at(-1).content, /<original>我不知道你怎么想<\/original>/)
+  assert.match(messages.at(-1).content, /给个准话/)
+  assert.equal(messages.filter((message) => message.role === 'assistant').length, 2)
 })
 
 test('accepts the one-input experience with sensible defaults', () => {

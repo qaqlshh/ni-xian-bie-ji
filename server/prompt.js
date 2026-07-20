@@ -182,6 +182,22 @@ export function buildReviewMessages(text, draft) {
     { role: 'system', content: system },
     {
       role: 'user',
+      content: '<original>你是不是脑子进水了，这方案也能交？</original>\n<draft>{"gentle":"这个方案质量不太行，麻烦重新改一下。","direct":"这方案质量太差，重做。","spicy":"这方案交出来是认真的吗？重做吧。"}</draft>',
+    },
+    {
+      role: 'assistant',
+      content: '{"gentle":"这个方案还有不少问题，就这样交不太合适。","direct":"这个方案质量不过关。","spicy":"这方案就这么交出来，是认真的吗？"}',
+    },
+    {
+      role: 'user',
+      content: '<original>我其实挺喜欢你的，但是不知道你怎么想</original>\n<draft>{"gentle":"我其实挺喜欢你的，但不知道你是什么感觉。","direct":"我喜欢你，告诉我你怎么想。","spicy":"我挺喜欢你的，给个准话呗？"}</draft>',
+    },
+    {
+      role: 'assistant',
+      content: '{"gentle":"我其实挺喜欢你的，但不知道你是什么感觉。","direct":"我喜欢你，只是一直没说出口。","spicy":"我是真的挺喜欢你的，这句话憋挺久了。"}',
+    },
+    {
+      role: 'user',
       content: `<original>${text}</original>\n<draft>${JSON.stringify(draft)}</draft>`,
     },
   ]
