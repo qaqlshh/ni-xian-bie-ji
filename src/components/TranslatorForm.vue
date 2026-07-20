@@ -30,10 +30,10 @@ function submit() {
   <section class="translator-card" aria-labelledby="translator-title">
     <div class="card-header">
       <div>
-        <span class="step-label">发送前抢救室</span>
+        <span class="step-label"><i aria-hidden="true"></i> 发送前抢救室</span>
         <h2 id="translator-title">原话先放这儿</h2>
       </div>
-      <span class="status-pill">草稿不会乱跑</span>
+      <span class="status-pill">不会自动发送</span>
     </div>
 
     <label class="textarea-wrap">
@@ -49,12 +49,12 @@ function submit() {
     <FireSlider v-model="fire" />
 
     <button class="translate-button" type="button" :disabled="loading || !originalText.trim()" @click="submit">
-      <span>{{ loading ? '正在抢救这句话…' : '先翻译一下' }}</span>
-      <span v-if="!loading" aria-hidden="true">→</span>
+      <span>{{ loading ? '正在抢救这句话…' : '翻一下，先别发' }}</span>
+      <span v-if="!loading" class="button-arrow" aria-hidden="true">→</span>
       <span v-else class="button-loader" aria-hidden="true"></span>
     </button>
 
-    <p class="form-note">不会替你道歉，也不会偷偷把火气删了。</p>
+    <p class="form-note"><span aria-hidden="true">⌁</span> 不会替你道歉，也不会偷偷把火气删了</p>
   </section>
 </template>
 
@@ -62,22 +62,14 @@ function submit() {
 .translator-card {
   position: relative;
   width: min(100%, 550px);
-  padding: 26px;
-  border: 1px solid rgba(94, 75, 60, 0.13);
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 26px 70px rgba(70, 48, 32, 0.13);
-  backdrop-filter: blur(18px);
-}
-
-.translator-card::before {
-  position: absolute;
-  inset: 12px -10px -12px 14px;
-  z-index: -1;
-  border-radius: 28px;
-  background: #e9dccc;
-  content: '';
-  transform: rotate(1.2deg);
+  padding: 28px;
+  border: 1px solid rgba(91, 72, 58, 0.11);
+  border-radius: 26px;
+  background: rgba(255, 253, 249, 0.96);
+  box-shadow:
+    0 2px 3px rgba(61, 43, 31, 0.03),
+    0 22px 60px rgba(61, 43, 31, 0.11);
+  backdrop-filter: blur(20px);
 }
 
 .card-header {
@@ -85,30 +77,42 @@ function submit() {
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 17px;
+  margin-bottom: 20px;
 }
 
 .step-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--danger);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.11em;
+}
+
+.step-label i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 0 4px rgba(189, 56, 39, 0.1);
 }
 
 h2 {
-  margin: 3px 0 0;
+  margin: 6px 0 0;
   color: var(--ink);
   font-family: var(--display);
-  font-size: clamp(24px, 3vw, 32px);
+  font-size: clamp(25px, 3vw, 30px);
   line-height: 1.2;
 }
 
 .status-pill {
-  padding: 7px 10px;
+  padding: 7px 11px;
+  border: 1px solid #ece4dc;
   border-radius: 999px;
-  color: #75685e;
-  background: #f3ede6;
-  font-size: 11px;
+  color: #8b7f75;
+  background: #faf7f2;
+  font-size: 10px;
   white-space: nowrap;
 }
 
@@ -120,14 +124,14 @@ h2 {
 textarea {
   box-sizing: border-box;
   width: 100%;
-  min-height: 118px;
-  resize: vertical;
-  padding: 16px 17px 30px;
-  border: 1px solid var(--line);
-  border-radius: 17px;
+  min-height: 132px;
+  resize: none;
+  padding: 17px 18px 32px;
+  border: 1px solid #e9e0d7;
+  border-radius: 18px;
   outline: none;
   color: var(--ink);
-  background: #fffdfa;
+  background: #faf7f2;
   font: inherit;
   font-size: 15px;
   line-height: 1.7;
@@ -135,8 +139,9 @@ textarea {
 }
 
 textarea:focus {
-  border-color: #bda792;
-  box-shadow: 0 0 0 4px rgba(189, 167, 146, 0.15);
+  border-color: rgba(189, 56, 39, 0.42);
+  background: #fffdf9;
+  box-shadow: 0 0 0 4px rgba(189, 56, 39, 0.07);
 }
 
 .textarea-wrap > span {
@@ -150,8 +155,8 @@ textarea:focus {
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin: 19px 0;
+  gap: 12px;
+  margin: 14px 0;
 }
 
 .translate-button {
@@ -159,13 +164,13 @@ textarea:focus {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-height: 53px;
-  margin-top: 17px;
-  padding: 0 20px;
+  min-height: 56px;
+  margin-top: 14px;
+  padding: 0 10px 0 19px;
   border: 0;
-  border-radius: 15px;
+  border-radius: 16px;
   color: #fffaf3;
-  background: var(--ink);
+  background: var(--danger);
   font: inherit;
   font-size: 15px;
   font-weight: 800;
@@ -175,7 +180,8 @@ textarea:focus {
 
 .translate-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(40, 31, 25, 0.2);
+  background: #aa3022;
+  box-shadow: 0 12px 24px rgba(170, 48, 34, 0.22);
 }
 
 .translate-button:disabled {
@@ -184,8 +190,14 @@ textarea:focus {
   transform: none;
 }
 
-.translate-button span:last-child {
-  font-size: 21px;
+.button-arrow {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 20px;
 }
 
 .button-loader {
@@ -202,15 +214,26 @@ textarea:focus {
 }
 
 .form-note {
-  margin: 12px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 13px 0 0;
   color: var(--ink-muted);
-  font-size: 11px;
+  font-size: 10px;
   text-align: center;
+}
+
+.form-note span {
+  color: var(--danger);
+  font-size: 14px;
 }
 
 @media (max-width: 620px) {
   .translator-card {
-    padding: 19px;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px;
     border-radius: 22px;
   }
 

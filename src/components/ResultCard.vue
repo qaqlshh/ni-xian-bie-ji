@@ -33,14 +33,14 @@ defineEmits(['copy', 'share'])
   display: grid;
   gap: 16px;
   padding: 20px;
-  border: 1px solid var(--line);
+  border: 1px solid #e8dfd6;
   border-radius: 20px;
-  background: var(--paper);
+  background: rgba(255, 253, 249, 0.96);
   transition: 180ms ease;
 }
 
 .result-card:hover {
-  border-color: #cdbdaf;
+  border-color: rgba(189, 56, 39, 0.25);
   transform: translateY(-2px);
 }
 
@@ -104,7 +104,7 @@ button {
 }
 
 button:hover {
-  border-color: #c5b2a2;
-  color: var(--ink);
+  border-color: rgba(189, 56, 39, 0.32);
+  color: var(--danger);
 }
 </style>

@@ -29,30 +29,34 @@ defineEmits(['update:modelValue'])
 .option-group {
   min-width: 0;
   margin: 0;
-  padding: 0;
-  border: 0;
+  padding: 14px;
+  border: 1px solid #eee6dd;
+  border-radius: 17px;
+  background: #faf7f2;
 }
 
 legend {
-  margin-bottom: 10px;
-  color: var(--ink-muted);
-  font-size: 13px;
-  font-weight: 700;
+  width: auto;
+  padding: 0 4px;
+  color: #887a6f;
+  font-size: 11px;
+  font-weight: 800;
 }
 
 .option-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 7px;
+  margin-top: 9px;
 }
 
 button {
-  min-height: 36px;
-  padding: 8px 13px;
-  border: 1px solid var(--line);
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid #e9dfd5;
   border-radius: 999px;
   color: var(--ink-soft);
-  background: var(--paper);
+  background: #fff;
   font: inherit;
   font-size: 13px;
   cursor: pointer;
@@ -66,9 +70,15 @@ button:hover {
 }
 
 button.active {
-  border-color: var(--ink);
+  border-color: var(--danger);
   color: var(--paper);
-  background: var(--ink);
-  box-shadow: 0 5px 12px rgba(36, 30, 25, 0.14);
+  background: var(--danger);
+  box-shadow: 0 5px 12px rgba(189, 56, 39, 0.17);
+}
+
+@media (max-width: 620px) {
+  .option-group {
+    padding: 13px;
+  }
 }
 </style>

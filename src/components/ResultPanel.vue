@@ -183,4 +183,15 @@ async function share(card, text) {
   color: var(--danger);
   text-align: center;
 }
+
+@media (max-width: 620px) {
+  .result-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .result-heading small {
+    display: none;
+  }
+}
 </style>

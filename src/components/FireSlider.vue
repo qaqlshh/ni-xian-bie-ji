@@ -35,10 +35,10 @@ const label = computed(() => fireLabel(props.modelValue))
 
 <style scoped>
 .fire-control {
-  padding: 15px 16px 14px;
-  border: 1px solid #eadfd3;
-  border-radius: 16px;
-  background: #fff9f3;
+  padding: 15px 16px 16px;
+  border: 1px solid #eee3da;
+  border-radius: 17px;
+  background: #faf7f2;
 }
 
 .fire-heading,
@@ -51,7 +51,7 @@ const label = computed(() => fireLabel(props.modelValue))
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 12px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -61,6 +61,7 @@ const label = computed(() => fireLabel(props.modelValue))
 
 .fire-heading strong {
   color: var(--danger);
+  font-size: 11px;
 }
 
 .range-wrap {
@@ -77,14 +78,14 @@ input {
   border-radius: 999px;
   outline: none;
   appearance: none;
-  background: linear-gradient(90deg, #f3b35f 0 var(--fire), #eadfd3 var(--fire) 100%);
+  background: linear-gradient(90deg, #d75a43 0 var(--fire), #e4d9d0 var(--fire) 100%);
   cursor: pointer;
 }
 
 input::-webkit-slider-thumb {
   width: 20px;
   height: 20px;
-  border: 4px solid var(--paper);
+  border: 4px solid #fff;
   border-radius: 50%;
   appearance: none;
   background: var(--danger);
@@ -94,7 +95,7 @@ input::-webkit-slider-thumb {
 input::-moz-range-thumb {
   width: 12px;
   height: 12px;
-  border: 4px solid var(--paper);
+  border: 4px solid #fff;
   border-radius: 50%;
   background: var(--danger);
 }

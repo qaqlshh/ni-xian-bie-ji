@@ -271,21 +271,27 @@ footer a {
 
 @media (max-width: 920px) {
   .hero-section {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 50px;
     padding-top: 64px;
   }
 
   .hero-copy {
+    min-width: 0;
     max-width: 620px;
     position: static;
+  }
+
+  .workspace {
+    width: 100%;
+    max-width: 100%;
   }
 }
 
 @media (max-width: 620px) {
   .topbar,
   main {
-    width: min(100% - 28px, 1180px);
+    width: min(1180px, calc(100% - 28px));
   }
 
   .topbar {
