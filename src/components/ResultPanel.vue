@@ -15,9 +15,9 @@ const copiedKey = ref('')
 const shareError = ref('')
 
 const cards = [
-  { key: 'gentle', label: '降一点', description: '先把刺收一收', tone: 'gentle' },
+  { key: 'gentle', label: '收着说', description: '情绪收一点', tone: 'gentle' },
   { key: 'direct', label: '照直说', description: '意思直接说明白', tone: 'direct' },
-  { key: 'spicy', label: '带着火', description: '有脾气，但不骂人', tone: 'spicy' },
+  { key: 'spicy', label: '放开说', description: '把原来的情绪放出来', tone: 'spicy' },
 ]
 
 async function copyText(key, text) {
