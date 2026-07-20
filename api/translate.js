@@ -13,8 +13,16 @@ function providerConfig() {
 }
 
 function parseProviderContent(content) {
-  const cleaned = String(content || '').trim().replace(/^```json\s*/i, '').replace(/\s*```$/, '')
-  return validateResults(JSON.parse(cleaned))
+  try {
+    const cleaned = String(content || '').trim().replace(/^```json\s*/i, '').replace(/\s*```$/, '')
+    const results = validateResults(JSON.parse(cleaned))
+    if (!results) throw new Error('AI 返回的三个版本不完整')
+    return results
+  } catch {
+    const error = new Error('AI 返回格式不对')
+    error.retryable = true
+    throw error
+  }
 }
 
 async function callProvider(input, provider) {
@@ -50,12 +58,10 @@ async function callProvider(input, provider) {
       }
 
       const payload = await response.json()
-      const results = parseProviderContent(payload.choices?.[0]?.message?.content)
-      if (!results) throw new Error('AI 返回内容不完整')
-      return results
+      return parseProviderContent(payload.choices?.[0]?.message?.content)
     } catch (error) {
       lastError = error
-      const retryable = error.name === 'AbortError' || error.retryable || error.message.includes('不完整')
+      const retryable = error.name === 'AbortError' || error.retryable
       if (!retryable || attempt === 1) break
       await new Promise((resolve) => setTimeout(resolve, 250))
     } finally {

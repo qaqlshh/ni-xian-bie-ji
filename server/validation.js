@@ -27,5 +27,6 @@ export function validateResults(value) {
     if (!text || Array.from(text).length > 500) return null
     result[key] = text
   }
+  if (new Set(Object.values(result)).size !== 3) return null
   return result
 }

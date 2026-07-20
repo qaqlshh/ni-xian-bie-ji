@@ -23,7 +23,7 @@ async function handleTranslate(payload) {
         <span class="brand-mark" aria-hidden="true">急</span>
         <span>你先别急</span>
       </a>
-      <span class="build-badge"><i></i> 正在长出来</span>
+      <span class="build-badge"><i></i> 已接电</span>
     </header>
 
     <main>
@@ -36,14 +36,14 @@ async function handleTranslate(payload) {
           </h1>
           <p class="hero-description">
             想骂人，但是钱还没结。<br />
-            火气可以留，话换一种说法。
+            脏话先删，火气别丢。
           </p>
 
           <div class="example-bubble" aria-label="翻译示例">
             <span class="bubble-label">比如</span>
             <p>“你们是不是一天一个想法？”</p>
             <span class="bubble-arrow">↓</span>
-            <p class="bubble-result">“这次调整和昨天确认的方向不太一致，麻烦先统一一下。”</p>
+            <p class="bubble-result">“昨天刚定的方向今天又变了，再这么改下去，这活没法按时交。”</p>
           </div>
         </div>
 
@@ -53,6 +53,7 @@ async function handleTranslate(payload) {
             <ResultPanel
               v-if="results || error"
               :error="error"
+              :fire="lastPayload?.fire ?? 50"
               :loading="isLoading"
               :original="lastPayload?.text || ''"
               :results="results"

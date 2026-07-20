@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import ResultCard from './ResultCard.vue'
 import { downloadShareCard } from '../utils/shareCard'
 
 const props = defineProps({
   error: { type: String, default: '' },
+  fire: { type: Number, default: 50 },
   loading: { type: Boolean, default: false },
   original: { type: String, required: true },
   results: { type: Object, default: null },
@@ -14,11 +15,11 @@ defineEmits(['retry'])
 const copiedKey = ref('')
 const shareError = ref('')
 
-const cards = [
-  { key: 'gentle', label: '好好说', description: '火先放旁边', tone: 'gentle' },
-  { key: 'direct', label: '直接说', description: '边界讲清楚', tone: 'direct' },
-  { key: 'spicy', label: '带点火', description: '对面听得出来', tone: 'spicy' },
-]
+const cards = computed(() => [
+  { key: 'gentle', label: '降一点', description: `${Math.max(0, props.fire - 30)}% 火气`, tone: 'gentle' },
+  { key: 'direct', label: '照直说', description: `${props.fire}% 火气`, tone: 'direct' },
+  { key: 'spicy', label: '带着火', description: `${Math.min(100, props.fire + 20)}% 火气`, tone: 'spicy' },
+])
 
 async function copyText(key, text) {
   try {
@@ -68,9 +69,9 @@ async function share(card, text) {
       <div class="result-heading">
         <div>
           <span>翻译结果</span>
-          <h2>挑一句顺眼的</h2>
+          <h2>火气没丢，挑一句发</h2>
         </div>
-        <small>发送按钮还在你手里</small>
+        <small>不满意就拉一下重来</small>
       </div>
       <div class="result-list">
         <ResultCard
